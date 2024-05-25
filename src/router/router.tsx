@@ -2,6 +2,7 @@ import { RouteObject, createBrowserRouter } from 'react-router-dom'
 import App from '../App'
 import Teacher from '../pages/Teacher'
 import Student from '../pages/Student'
+import TeacherCreator from '../pages/TeacherCreator'
 
 const routes: RouteObject[] = [
   {
@@ -15,6 +16,10 @@ const routes: RouteObject[] = [
   {
     path: '/student',
     element: <Student />
+  },
+  {
+    path: '/teacher/creator',
+    element: <TeacherCreator />
   }
 ]
 
