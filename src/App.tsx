@@ -1,12 +1,46 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useNavigate } from 'react-router'
+import { FormEvent } from 'react'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const navigate = useNavigate()
 
-  return <></>
+  const handleInit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const form = event.target as HTMLFormElement
+    const elements = form.elements as HTMLFormControlsCollection
+    const userElement = elements.namedItem('user') as RadioNodeList
+    const arrayElements = [...userElement]
+
+    arrayElements.forEach((input) => {
+      const inputElement = input as HTMLInputElement
+      if (inputElement.checked) {
+        const type = inputElement.dataset.type
+        navigate(`/${type}`)
+      }
+    })
+  }
+
+  return (
+    <div>
+      <article>
+        <form onSubmit={handleInit}>
+          <label htmlFor='user'>
+            Indica que tipo de usuario eres
+            <div>
+              <span>Profesor</span>
+              <input type='radio' name='user' id='user' data-type='teacher' />
+            </div>
+            <div>
+              <span>Estudiante</span>
+              <input type='radio' name='user' id='user' data-type='student' />
+            </div>
+          </label>
+          <button type='submit'>Ingresar</button>
+        </form>
+      </article>
+    </div>
+  )
 }
 
 export default App
