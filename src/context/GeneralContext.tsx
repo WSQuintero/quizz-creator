@@ -1,28 +1,25 @@
-import {
-  Dispatch,
-  ReactNode,
-  SetStateAction,
-  createContext,
-  useState
-} from 'react'
-
-interface ContextTypes {
-  questions: string
-  setQuestions: Dispatch<SetStateAction<string>>
-  answers: string
-  setAnswers: Dispatch<SetStateAction<string>>
-}
+import { ReactNode, createContext, useState } from 'react'
 
 const GeneralContext = createContext<ContextTypes>({
   questions: '',
   setQuestions: () => null,
   answers: '',
-  setAnswers: () => null
+  setAnswers: () => null,
+  actualFormCreation: [],
+  setActualFormCreation: () => null,
+  forms: [],
+  setForms: () => null
 })
 
 function ContextProvider({ children }: { children: ReactNode }) {
   const [questions, setQuestions] = useState('')
   const [answers, setAnswers] = useState('')
+  const [forms, setForms] = useState<OutputObject[]>(
+    JSON.parse(String(localStorage.getItem('forms'))) || []
+  )
+  const [actualFormCreation, setActualFormCreation] = useState<OutputObject[]>(
+    []
+  )
 
   return (
     <GeneralContext.Provider
@@ -30,7 +27,11 @@ function ContextProvider({ children }: { children: ReactNode }) {
         questions,
         setQuestions,
         answers,
-        setAnswers
+        setAnswers,
+        actualFormCreation,
+        setActualFormCreation,
+        forms,
+        setForms
       }}>
       {children}
     </GeneralContext.Provider>
