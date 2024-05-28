@@ -1,18 +1,14 @@
 import { useContext } from 'react'
 import { GeneralContext } from '../context/GeneralContext'
 import { useNavigate } from 'react-router'
+import { QuestionsCreatedPreviewType  } from '../types/GeneralComponentsTypes'
 
 function QuestionsCreatedPreview({
   actualQuestions,
   setActualFormCreation,
-  correctAnswers,
-  resetcorrectOptions
-}: {
-  actualQuestions: OutputObject[]
-  setActualFormCreation: (actualQuestions: OutputObject[]) => void
-  correctAnswers: string[]
-  resetcorrectOptions: () => void
-}) {
+  resetcorrectOptions,
+}:QuestionsCreatedPreviewType) {
+
   const { forms, setForms } = useContext(GeneralContext)
   const navigate = useNavigate()
 
@@ -34,10 +30,10 @@ function QuestionsCreatedPreview({
     navigate('/teacher')
   }
 
-  const getCorrectAnswer = (ind: number) => {
+  const getCorrectAnswer = (actualQuestions:OutputObject[],ind:number) => {
     return Number(
-      correctAnswers[ind]?.split('-')[
-        correctAnswers[ind]?.split('-').length - 1
+      actualQuestions[ind].correctAnswer?.split('-')[
+        actualQuestions[ind].correctAnswer?.split('-').length - 1
       ]
     )
   }
@@ -47,10 +43,10 @@ function QuestionsCreatedPreview({
         <div key={ind}>
           <p>{question.numberQuestion}</p>
           <p>{question.question}</p>
-          <p>Respuesta correcta {getCorrectAnswer(ind)}</p>
+          <p>Respuesta correcta {getCorrectAnswer(actualQuestions,ind)}</p>
           {Object.entries(question.answers).map((answer, index) => (
             <div key={index}>
-              {getCorrectAnswer(ind) - 1 === index && <p>{answer[1]}</p>}
+              {getCorrectAnswer(actualQuestions,ind) - 1 === index && <p>{answer[1]}</p>}
             </div>
           ))}
         </div>

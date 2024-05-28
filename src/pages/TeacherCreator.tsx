@@ -1,4 +1,4 @@
-import React, {  useContext, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { GeneralContext } from '../context/GeneralContext'
 import { Navigate } from 'react-router'
 import { useForm } from 'react-hook-form'
@@ -10,19 +10,17 @@ function TeacherCreator() {
     useContext(GeneralContext)
   const questionsToRender = Array(Number(questions)).fill('')
   const answersToRender = Array(Number(answers)).fill('')
-  const [errorZod, setErrorZod] = useState('')
+  const [error, setError] = useState('')
   const [correctAnswers, setCorrectAnswers] = useState<string[]>([])
   const { register, handleSubmit, clearErrors } = useForm()
   const [disabledInputs, setDisabledInputs] = useState<Set<string>>(new Set())
+  const [openModal, setOpenModal] = useState<boolean>(false)
 
   if (!questions || !answers) {
     return <Navigate to={'/teacher'} />
   }
 
-  const handleInputChange = (
-    index: number,
-    ind: number
-  ) => {
+  const handleInputChange = (index: number, ind: number) => {
     const questionKey = `question_${index + 1}`
     const inputKey = `${questionKey}-correct-${ind + 1}`
 
@@ -30,80 +28,123 @@ function TeacherCreator() {
     setDisabledInputs((prev) => new Set(prev).add(questionKey))
   }
 
-  const handleCreateForm = (data: CreateQuestions) => {
+  const validations = (data: CreateQuestions) => {
     const resultValidationSchema = QuestionsSchema.safeParse(data)
+
+    const validateInputs = (toValidate: string, condition: number) => {
+      return (
+        Number(
+          Object.entries(data).filter(
+            (dat) => dat[0].startsWith(toValidate) && dat[1]
+          ).length
+        ) !== Number(condition)
+      )
+    }
+
     if (!resultValidationSchema.success) {
-      setErrorZod(resultValidationSchema.error.issues[0].message)
-      return
-    } else {
-      clearErrors()
-      setErrorZod('')
+      setError(resultValidationSchema.error.issues[0].message)
+      return false
+    }
 
-      if(Number(correctAnswers.length)!==Number(questions)){
-      setErrorZod("Debes seleccionar la respuesta correcta de cada pregunta ")
-        return
+    if (Number(correctAnswers.length) !== Number(questions)) {
+      setError('Debes seleccionar la respuesta correcta de cada pregunta ')
+      return false
+    }
+
+    if (validateInputs('question', Number(questions))) {
+      setError('Debes rellenar todas las preguntas ')
+      return false
+    }
+
+    if (validateInputs('answer', Number(answers) * Number(questions))) {
+      setError('Debes rellenar todas las respuestas ')
+      return false
+    }
+    clearErrors()
+    setError('')
+    return true
+  }
+
+  const handleCreateForm = (data: CreateQuestions) => {
+    setOpenModal(false)
+    if (!validations(data)) return
+    setOpenModal(true)
+
+    const intermediateData = Object.entries(data).map((question) => {
+      const correctQuestion = question[0].split('-')
+      const correctData = question[1]
+
+      if (correctQuestion.includes('answer')) {
+        return {
+          numberQuestion: Number(correctQuestion[3]),
+          numberAnswer: correctQuestion[1],
+          answer: correctData
+        }
+      } else {
+        return {
+          numberQuestion: Number(correctQuestion[correctQuestion.length - 1]),
+          question: correctData
+        }
       }
-      const intermediateData = Object.entries(data).map((question) => {
-        const correctQuestion = question[0].split('-')
-        const correctData = question[1]
+    })
 
-        if (correctQuestion.includes('answer')) {
-          return {
-            numberQuestion: Number(correctQuestion[3]),
-            numberAnswer: correctQuestion[1],
-            answer: correctData
-          }
-        } else {
-          return {
-            numberQuestion: Number(correctQuestion[correctQuestion.length - 1]),
-            question: correctData
+    const questionsWithoutCorrectAnswer = intermediateData.reduce(
+      (acc: OutputObject[], item: InputObject) => {
+        const existingQuestion = acc.find(
+          (q) => q.numberQuestion === item.numberQuestion
+        )
+
+        if (item.question) {
+          if (!existingQuestion) {
+            acc.push({
+              question: item.question,
+              numberQuestion: Number(item.numberQuestion),
+              answers: {}
+            })
           }
         }
+
+        if (item.answer && item.numberAnswer) {
+          if (existingQuestion) {
+            existingQuestion.answers[`answer-${item.numberAnswer}`] =
+              item.answer
+          }
+        }
+
+        return acc
+      },
+      []
+    )
+    const finalData = questionsWithoutCorrectAnswer
+      .sort((a, b) => a.numberQuestion - b.numberQuestion)
+      .map((question, index) => {
+        const sortedCorrectAnswers = correctAnswers.sort((a, b) => {
+          const aNumber = Number(a.split('-')[0].split("_")[1])
+          const bNumber = Number(b.split('-')[0].split("_")[1])
+          return aNumber - bNumber
+        })
+
+        return {
+          ...question,
+          correctAnswer: sortedCorrectAnswers[index]
+        }
       })
-
-      const finalData = intermediateData.reduce(
-        (acc: OutputObject[], item: InputObject) => {
-          const existingQuestion = acc.find(
-            (q) => q.numberQuestion === item.numberQuestion
-          )
-
-          if (item.question) {
-            if (!existingQuestion) {
-              acc.push({
-                question: item.question,
-                numberQuestion: Number(item.numberQuestion),
-                answers: {}
-              })
-            }
-          }
-
-          if (item.answer && item.numberAnswer) {
-            if (existingQuestion) {
-              existingQuestion.answers[`answer-${item.numberAnswer}`] =
-                item.answer
-            }
-          }
-
-          return acc
-        },
-        []
-      )
-
-      setActualFormCreation(finalData)
-    }
+    setActualFormCreation(finalData)
   }
 
-  function disableAllRadioInputs() {
+  const disableAllRadioInputs = () => {
     const radioInputs = document.querySelectorAll('input[type="radio"]')
     radioInputs.forEach((input) => {
-      (input as HTMLInputElement).checked = false;
+      (input as HTMLInputElement).checked = false
     })
   }
+
   const resetcorrectOptions = () => {
     setDisabledInputs(new Set())
     setCorrectAnswers([])
     disableAllRadioInputs()
   }
+
   return (
     <div>
       <h3>Crea tus preguntas y respuestas</h3>
@@ -129,7 +170,7 @@ function TeacherCreator() {
                   id={`question-${index + 1}`}
                   name={`question-${index + 1}`}
                   disabled={disabledInputs?.has(`question_${index + 1}`)}
-                  onChange={() => handleInputChange( index, ind)}
+                  onChange={() => handleInputChange(index, ind)}
                 />
               </React.Fragment>
             ))}
@@ -137,12 +178,12 @@ function TeacherCreator() {
         ))}
         <button type='submit'>Crear</button>
       </form>
-      {errorZod && <span>{errorZod}</span>}
-      {actualFormCreation.length > 0 && (
+      {error && <span>{error}</span>}
+
+      {Number(actualFormCreation.length) === Number(questions) && openModal && (
         <QuestionsCreatedPreview
           actualQuestions={actualFormCreation}
           setActualFormCreation={setActualFormCreation}
-          correctAnswers={correctAnswers}
           resetcorrectOptions={resetcorrectOptions}
         />
       )}

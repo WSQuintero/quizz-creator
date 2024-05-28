@@ -17,4 +17,5 @@ interface OutputObject {
   question: string
   numberQuestion: number
   answers: OutputAnswer
+  correctAnswer:string
 }
