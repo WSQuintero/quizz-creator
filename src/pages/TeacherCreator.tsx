@@ -163,17 +163,17 @@ function TeacherCreator() {
       <h3>Crea tus preguntas y respuestas</h3>
       <form
         onSubmit={handleSubmit(handleCreateForm)}
-        className='flex flex-col w-3/4 gap-3 h-[80vh] justify-center items-center'>
+        className='flex flex-col w-3/4 gap-3 h-[90vh] justify-center items-center'>
         <Swiper
           pagination={pagination}
           modules={[Pagination]}
           >
           {questionsToRender.map((_, index) => (
-            <SwiperSlide className='w-full '>
-              <article key={index} className='flex-col w-[90%] relative h-auto'>
-                <span className='absolute top-6 -left-3 border border-gray-400 p-2 bg-white rounded-full'>
+            <SwiperSlide className='w-full h-full'>
+                <span className='absolute top-6 left-3 border border-gray-400 p-2 bg-white rounded-full h-[30px] w-[30px] flex justify-center items-center'>
                   {index + 1}
                 </span>
+              <article key={index} className='flex-col w-[90%] relative h-[80%] overflow-auto'>
                 <input
                   type='text'
                   placeholder='Crea tu pregunta'
