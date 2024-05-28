@@ -161,6 +161,7 @@ function TeacherCreator() {
   return (
     <div className='w-full h-screen flex justify-center items-center flex-col'>
       <h3>Crea tus preguntas y respuestas</h3>
+      <GeneralButton onClick={()=>window.history.back()}>{"<-"}</GeneralButton>
       <form
         onSubmit={handleSubmit(handleCreateForm)}
         className='flex flex-col w-3/4 gap-3 h-[90vh] justify-center items-center'>
