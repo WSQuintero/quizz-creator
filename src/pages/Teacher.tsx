@@ -1,6 +1,7 @@
 import { ChangeEvent, useContext } from 'react'
 import { useNavigate } from 'react-router'
 import { GeneralContext } from '../context/GeneralContext'
+import GeneralButton from '../components/GeneralButton'
 
 function Teacher() {
   const { questions, answers, setQuestions, setAnswers } =
@@ -14,8 +15,10 @@ function Teacher() {
   }
 
   return (
-    <div>
-      <label htmlFor='questions'>
+    <div className='w-full h-screen flex justify-center items-center'>
+    <article className='flex-col justify-around'>
+
+      <label htmlFor='questions' className='text-center font-bold'>
         Escribe cuantas preguntas quieres
         <input
           type='number'
@@ -27,7 +30,7 @@ function Teacher() {
           }
         />
       </label>
-      <label htmlFor='answers'>
+      <label htmlFor='answers'  className='text-center font-bold'>
         Escribe cuantas respuestas por pregunta quieres
         <input
           type='number'
@@ -39,7 +42,8 @@ function Teacher() {
           }
         />
       </label>
-      <button onClick={handleSendQuestions}>Enviar</button>
+      <GeneralButton onClick={handleSendQuestions}>Enviar</GeneralButton>
+    </article>
     </div>
   )
 }

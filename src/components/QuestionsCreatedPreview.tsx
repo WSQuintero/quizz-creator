@@ -1,14 +1,14 @@
-import { useContext } from 'react'
+import React, { useContext, useMemo } from 'react'
 import { GeneralContext } from '../context/GeneralContext'
 import { useNavigate } from 'react-router'
-import { QuestionsCreatedPreviewType  } from '../types/GeneralComponentsTypes'
+import { QuestionsCreatedPreviewType } from '../types/GeneralComponentsTypes'
+import GeneralButton from './GeneralButton'
 
 function QuestionsCreatedPreview({
   actualQuestions,
   setActualFormCreation,
-  resetcorrectOptions,
-}:QuestionsCreatedPreviewType) {
-
+  resetcorrectOptions
+}: QuestionsCreatedPreviewType) {
   const { forms, setForms } = useContext(GeneralContext)
   const navigate = useNavigate()
 
@@ -30,30 +30,74 @@ function QuestionsCreatedPreview({
     navigate('/teacher')
   }
 
-  const getCorrectAnswer = (actualQuestions:OutputObject[],ind:number) => {
-    return Number(
-      actualQuestions[ind].correctAnswer?.split('-')[
-        actualQuestions[ind].correctAnswer?.split('-').length - 1
-      ]
-    )
-  }
+  const getCorrectAnswer = useMemo(() => {
+    return (actualQuestions: OutputObject[], ind: number): number => {
+      if (
+        actualQuestions &&
+        actualQuestions[ind] &&
+        actualQuestions[ind].correctAnswer
+      ) {
+        const correctAnswer = actualQuestions[ind]?.correctAnswer
+        if (correctAnswer) {
+          const correctAnswerParts = correctAnswer.split('-')
+          return Number(correctAnswerParts[correctAnswerParts.length - 1])
+        }
+      }
+      return 0
+    }
+  }, [])
+
   return (
-    <div>
-      {actualQuestions.map((question, ind) => (
-        <div key={ind}>
-          <p>{question.numberQuestion}</p>
-          <p>{question.question}</p>
-          <p>Respuesta correcta {getCorrectAnswer(actualQuestions,ind)}</p>
-          {Object.entries(question.answers).map((answer, index) => (
-            <div key={index}>
-              {getCorrectAnswer(actualQuestions,ind) - 1 === index && <p>{answer[1]}</p>}
+    <div className='bg-black/50 w-full h-screen gap-5 fixed top-0 left-0 z-50 flex justify-start items-center flex-col p-10 '>
+      <button
+        className='bg-white absolute top-10 right-5 p-5 rounded-full w-[30px] h-[30px] flex justify-center items-center'
+        onClick={handleCancelSendQuestions}>
+        X
+      </button>
+
+      <div className='h-[90vh]  overflow-auto w-full flex flex-col justify-center items-center gap-5'>
+        {actualQuestions.map((question, ind) => (
+          <article key={ind} className='flex-col h-[200px] p-5'>
+            <span className='p-3 w-[30px] h-[30px] bg-white flex justify-center items-center rounded-full border border-gray-400'>
+              {question.numberQuestion}
+            </span>
+            <p className='font-bold border border-gray-400 pl-5 mt-3'>
+              Pregunta: <span className='font-normal'>{question.question}</span>
+            </p>
+            <div className='flex gap-3 border border-gray-400 pl-5'>
+              <p className='font-bold '>
+                Respuesta correcta:{' '}
+              </p>
+              {Object.entries(question.answers).map((answer, index) => (
+                <div key={index}>
+                  {getCorrectAnswer(actualQuestions, ind) - 1 === index && (
+                    <p className='text-green-500'>{answer[1]}</p>
+                  )}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      ))}
+            <div className='flex gap-3 border border-gray-400 pl-5'>
+              <p className='font-bold '>
+                Respuestas incorrectas:{' '}
+              </p>
+              <ol className='flex flex-col list-disc ml-5'>
+
+              {Object.entries(question.answers).map((answer, index) => (
+                <React.Fragment key={index}>
+                {getCorrectAnswer(actualQuestions, ind) - 1 !== index && (
+                <li  >
+                    <p className="text-red-500">{answer[1]}</p>
+                    </li>
+                  )}
+                </React.Fragment>
+              ))}
+              </ol>
+            </div>
+          </article>
+        ))}
+      </div>
       <div>
-        <button onClick={handleCancelSendQuestions}>Cancelar</button>
-        <button onClick={handleCreateQuestions}>Enviar</button>
+        <GeneralButton onClick={handleCreateQuestions}>Enviar</GeneralButton>
       </div>
     </div>
   )

@@ -24,7 +24,7 @@ function App() {
 
   return (
     <div className='w-full h-screen flex justify-center items-center'>
-      <article className='w-2/4 h-2/4 border border-gray-400 p-5  rounded-xl flex '>
+      <article>
         <form onSubmit={handleInit} className='w-full flex flex-col items-center justify-center gap-5'>
           <label htmlFor='user' >
             <h3 className='text-center font-bold mb-5'>Indica que tipo de usuario eres</h3>

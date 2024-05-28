@@ -1,9 +1,15 @@
-import React, { useContext, useState } from 'react'
+import { useContext, useState } from 'react'
 import { GeneralContext } from '../context/GeneralContext'
 import { Navigate } from 'react-router'
 import { useForm } from 'react-hook-form'
 import { QuestionsSchema } from '../schema/questionsSchema'
 import QuestionsCreatedPreview from '../components/QuestionsCreatedPreview'
+import GeneralButton from '../components/GeneralButton'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Pagination } from 'swiper/modules'
+
+import 'swiper/css/pagination'
+import 'swiper/css'
 
 function TeacherCreator() {
   const { questions, answers, setActualFormCreation, actualFormCreation } =
@@ -18,6 +24,13 @@ function TeacherCreator() {
 
   if (!questions || !answers) {
     return <Navigate to={'/teacher'} />
+  }
+
+  const pagination = {
+    clickable: true,
+    renderBullet: function (index: number, className: string) {
+      return '<span class="' + className + '">' + (index + 1) + '</span>'
+    }
   }
 
   const handleInputChange = (index: number, ind: number) => {
@@ -119,8 +132,8 @@ function TeacherCreator() {
       .sort((a, b) => a.numberQuestion - b.numberQuestion)
       .map((question, index) => {
         const sortedCorrectAnswers = correctAnswers.sort((a, b) => {
-          const aNumber = Number(a.split('-')[0].split("_")[1])
-          const bNumber = Number(b.split('-')[0].split("_")[1])
+          const aNumber = Number(a.split('-')[0].split('_')[1])
+          const bNumber = Number(b.split('-')[0].split('_')[1])
           return aNumber - bNumber
         })
 
@@ -146,39 +159,57 @@ function TeacherCreator() {
   }
 
   return (
-    <div>
+    <div className='w-full h-screen flex justify-center items-center flex-col'>
       <h3>Crea tus preguntas y respuestas</h3>
-      <form onSubmit={handleSubmit(handleCreateForm)}>
-        {questionsToRender.map((_, index) => (
-          <article key={index}>
-            <input
-              type='text'
-              placeholder='Crea tu pregunta'
-              {...register(`question-${index + 1}`)}
-            />
-            {answersToRender.map((_, ind) => (
-              <React.Fragment key={ind}>
+      <form
+        onSubmit={handleSubmit(handleCreateForm)}
+        className='flex flex-col w-3/4 gap-3 h-[80vh] justify-center items-center'>
+        <Swiper
+          pagination={pagination}
+          modules={[Pagination]}
+          >
+          {questionsToRender.map((_, index) => (
+            <SwiperSlide className='w-full '>
+              <article key={index} className='flex-col w-[90%] relative h-auto'>
+                <span className='absolute top-6 -left-3 border border-gray-400 p-2 bg-white rounded-full'>
+                  {index + 1}
+                </span>
                 <input
                   type='text'
-                  placeholder='Crea tu respuesta'
-                  {...register(`answer-${ind + 1}-question-${index + 1}`)}
+                  placeholder='Crea tu pregunta'
+                  {...register(`question-${index + 1}`)}
+                  className='text-center'
                 />
-                <label htmlFor={`question-${index + 1}`}>¿Correcta?</label>
-                <input
-                  type='radio'
-                  key={ind}
-                  id={`question-${index + 1}`}
-                  name={`question-${index + 1}`}
-                  disabled={disabledInputs?.has(`question_${index + 1}`)}
-                  onChange={() => handleInputChange(index, ind)}
-                />
-              </React.Fragment>
-            ))}
-          </article>
-        ))}
-        <button type='submit'>Crear</button>
+                {answersToRender.map((_, ind) => (
+                  <div key={ind} className='w-full flex gap-3 mt-5'>
+                    <input
+                      type='text'
+                      placeholder='Crea tu respuesta'
+                      {...register(`answer-${ind + 1}-question-${index + 1}`)}
+                    />
+                    <div className='border border-gray-400 p-2 flex flex-col justify-center items-center '>
+                      <label htmlFor={`question-${index + 1}`}>
+                        ¿Correcta?
+                      </label>
+                      <input
+                        type='radio'
+                        key={ind}
+                        id={`question-${index + 1}`}
+                        name={`question-${index + 1}`}
+                        disabled={disabledInputs?.has(`question_${index + 1}`)}
+                        onChange={() => handleInputChange(index, ind)}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </article>
+
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      {error && <span className='text-red-600 text-xl'>{error}</span>}
+        <GeneralButton type='submit'>Crear</GeneralButton>
       </form>
-      {error && <span>{error}</span>}
 
       {Number(actualFormCreation.length) === Number(questions) && openModal && (
         <QuestionsCreatedPreview
