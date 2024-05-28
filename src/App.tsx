@@ -23,18 +23,20 @@ function App() {
   }
 
   return (
-    <div>
-      <article>
-        <form onSubmit={handleInit}>
-          <label htmlFor='user'>
-            Indica que tipo de usuario eres
-            <div>
+    <div className='w-full h-screen flex justify-center items-center'>
+      <article className='w-2/4 h-2/4 border border-gray-400 p-5  rounded-xl flex '>
+        <form onSubmit={handleInit} className='w-full flex flex-col items-center justify-center gap-5'>
+          <label htmlFor='user' >
+            <h3 className='text-center font-bold mb-5'>Indica que tipo de usuario eres</h3>
+            <div className='flex gap-2'>
+            <div className='flex flex-col justify-around gap-5  w-2/4 items-center border border-gray-400 p-5 shrink-0' >
               <span>Profesor</span>
-              <input type='radio' name='user' id='user' data-type='teacher' />
+              <input className='cursor-pointer' type='radio' name='user' id='user' data-type='teacher' />
             </div>
-            <div>
+            <div className='flex flex-col w-2/4 justify-around gap-5 h-full items-center border border-gray-400 p-5 shrink-0' >
               <span>Estudiante</span>
-              <input type='radio' name='user' id='user' data-type='student' />
+              <input className='cursor-pointer' type='radio' name='user' id='user' data-type='student' />
+            </div>
             </div>
           </label>
           <GeneralButton type='submit'>Ingresar</GeneralButton>
