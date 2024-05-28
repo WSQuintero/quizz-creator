@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router'
 import { FormEvent } from 'react'
 import './App.css'
+import GeneralButton from './components/GeneralButton'
 
 function App() {
   const navigate = useNavigate()
@@ -36,7 +37,7 @@ function App() {
               <input type='radio' name='user' id='user' data-type='student' />
             </div>
           </label>
-          <button type='submit'>Ingresar</button>
+          <GeneralButton type='submit'>Ingresar</GeneralButton>
         </form>
       </article>
     </div>

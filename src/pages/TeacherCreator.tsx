@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import React, { ChangeEvent, useContext, useState } from 'react'
 import { GeneralContext } from '../context/GeneralContext'
 import { Navigate } from 'react-router'
 import { useForm } from 'react-hook-form'
@@ -11,14 +11,36 @@ function TeacherCreator() {
   const questionsToRender = Array(Number(questions)).fill('')
   const answersToRender = Array(Number(answers)).fill('')
   const [errorZod, setErrorZod] = useState('')
-
+  const [correctAnswers, setCorrectAnswers] = useState<string[]>([])
   const { register, handleSubmit, clearErrors } = useForm()
+  const [disabledInputs, setDisabledInputs] = useState<Set<string>>(new Set())
+
+  const handleInputChange = (
+    event: ChangeEvent<HTMLInputElement>,
+    index: number,
+    ind: number
+  ) => {
+    const questionKey = `question_${index + 1}`
+    const inputKey = `${questionKey}-correct-${ind + 1}`
+
+    if (
+      !correctAnswers.some((answer) => answer.split('-')[0] === questionKey)
+    ) {
+      setCorrectAnswers((prev) => [...prev, inputKey])
+      setDisabledInputs((prev) => new Set(prev).add(questionKey))
+    } else {
+      event.target.value = 'off'
+      console.log('ya está')
+    }
+  }
 
   if (!questions || !answers) {
     return <Navigate to={'/teacher'} />
   }
 
   const handleCreateForm = (data: CreateQuestions) => {
+    console.log(data)
+
     const resultValidationSchema = QuestionsSchema.safeParse(data)
     if (!resultValidationSchema.success) {
       setErrorZod(resultValidationSchema.error.issues[0].message)
@@ -76,6 +98,8 @@ function TeacherCreator() {
     }
   }
 
+  console.log(correctAnswers)
+
   return (
     <div>
       <h3>Crea tus preguntas y respuestas</h3>
@@ -88,12 +112,22 @@ function TeacherCreator() {
               {...register(`question-${index + 1}`)}
             />
             {answersToRender.map((_, ind) => (
-              <input
-                type='text'
-                placeholder='Crea tu respuesta'
-                key={ind}
-                {...register(`answer-${ind + 1}-question-${index + 1}`)}
-              />
+              <React.Fragment key={ind}>
+                <input
+                  type='text'
+                  placeholder='Crea tu respuesta'
+                  {...register(`answer-${ind + 1}-question-${index + 1}`)}
+                />
+                <label htmlFor={`question-${index + 1}`}>¿Correcta?</label>
+                <input
+                  type='radio'
+                  key={ind}
+                  id={`question-${index + 1}`}
+                  name={`question-${index + 1}`}
+                  disabled={disabledInputs.has(`question_${index + 1}`)}
+                  onChange={(event) => handleInputChange(event, index, ind)}
+                />
+              </React.Fragment>
             ))}
           </article>
         ))}
