@@ -4,10 +4,14 @@ import { useNavigate } from 'react-router'
 
 function QuestionsCreatedPreview({
   actualQuestions,
-  setActualFormCreation
+  setActualFormCreation,
+  correctAnswers,
+  resetcorrectOptions
 }: {
   actualQuestions: OutputObject[]
   setActualFormCreation: (actualQuestions: OutputObject[]) => void
+  correctAnswers: string[]
+  resetcorrectOptions: () => void
 }) {
   const { forms, setForms } = useContext(GeneralContext)
   const navigate = useNavigate()
@@ -17,6 +21,7 @@ function QuestionsCreatedPreview({
   ) => {
     event.preventDefault()
     setActualFormCreation([])
+    resetcorrectOptions()
   }
 
   const handleCreateQuestions = (
@@ -28,15 +33,24 @@ function QuestionsCreatedPreview({
     setActualFormCreation([])
     navigate('/teacher')
   }
+
+  const getCorrectAnswer = (ind: number) => {
+    return Number(
+      correctAnswers[ind]?.split('-')[
+        correctAnswers[ind]?.split('-').length - 1
+      ]
+    )
+  }
   return (
     <div>
-      {actualQuestions.map((question, index) => (
-        <div key={index}>
+      {actualQuestions.map((question, ind) => (
+        <div key={ind}>
           <p>{question.numberQuestion}</p>
           <p>{question.question}</p>
+          <p>Respuesta correcta {getCorrectAnswer(ind)}</p>
           {Object.entries(question.answers).map((answer, index) => (
             <div key={index}>
-              <p>{answer[1]}</p>
+              {getCorrectAnswer(ind) - 1 === index && <p>{answer[1]}</p>}
             </div>
           ))}
         </div>

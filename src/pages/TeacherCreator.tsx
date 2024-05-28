@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useContext, useState } from 'react'
+import React, {  useContext, useState } from 'react'
 import { GeneralContext } from '../context/GeneralContext'
 import { Navigate } from 'react-router'
 import { useForm } from 'react-hook-form'
@@ -15,39 +15,34 @@ function TeacherCreator() {
   const { register, handleSubmit, clearErrors } = useForm()
   const [disabledInputs, setDisabledInputs] = useState<Set<string>>(new Set())
 
+  if (!questions || !answers) {
+    return <Navigate to={'/teacher'} />
+  }
+
   const handleInputChange = (
-    event: ChangeEvent<HTMLInputElement>,
     index: number,
     ind: number
   ) => {
     const questionKey = `question_${index + 1}`
     const inputKey = `${questionKey}-correct-${ind + 1}`
 
-    if (
-      !correctAnswers.some((answer) => answer.split('-')[0] === questionKey)
-    ) {
-      setCorrectAnswers((prev) => [...prev, inputKey])
-      setDisabledInputs((prev) => new Set(prev).add(questionKey))
-    } else {
-      event.target.value = 'off'
-      console.log('ya está')
-    }
-  }
-
-  if (!questions || !answers) {
-    return <Navigate to={'/teacher'} />
+    setCorrectAnswers((prev) => [...prev, inputKey])
+    setDisabledInputs((prev) => new Set(prev).add(questionKey))
   }
 
   const handleCreateForm = (data: CreateQuestions) => {
-    console.log(data)
-
     const resultValidationSchema = QuestionsSchema.safeParse(data)
     if (!resultValidationSchema.success) {
       setErrorZod(resultValidationSchema.error.issues[0].message)
+      return
     } else {
       clearErrors()
       setErrorZod('')
 
+      if(Number(correctAnswers.length)!==Number(questions)){
+      setErrorZod("Debes seleccionar la respuesta correcta de cada pregunta ")
+        return
+      }
       const intermediateData = Object.entries(data).map((question) => {
         const correctQuestion = question[0].split('-')
         const correctData = question[1]
@@ -98,8 +93,17 @@ function TeacherCreator() {
     }
   }
 
-  console.log(correctAnswers)
-
+  function disableAllRadioInputs() {
+    const radioInputs = document.querySelectorAll('input[type="radio"]')
+    radioInputs.forEach((input) => {
+      (input as HTMLInputElement).checked = false;
+    })
+  }
+  const resetcorrectOptions = () => {
+    setDisabledInputs(new Set())
+    setCorrectAnswers([])
+    disableAllRadioInputs()
+  }
   return (
     <div>
       <h3>Crea tus preguntas y respuestas</h3>
@@ -124,8 +128,8 @@ function TeacherCreator() {
                   key={ind}
                   id={`question-${index + 1}`}
                   name={`question-${index + 1}`}
-                  disabled={disabledInputs.has(`question_${index + 1}`)}
-                  onChange={(event) => handleInputChange(event, index, ind)}
+                  disabled={disabledInputs?.has(`question_${index + 1}`)}
+                  onChange={() => handleInputChange( index, ind)}
                 />
               </React.Fragment>
             ))}
@@ -138,6 +142,8 @@ function TeacherCreator() {
         <QuestionsCreatedPreview
           actualQuestions={actualFormCreation}
           setActualFormCreation={setActualFormCreation}
+          correctAnswers={correctAnswers}
+          resetcorrectOptions={resetcorrectOptions}
         />
       )}
     </div>
