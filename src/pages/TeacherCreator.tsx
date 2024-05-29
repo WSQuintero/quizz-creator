@@ -170,7 +170,7 @@ function TeacherCreator() {
           modules={[Pagination]}
           >
           {questionsToRender.map((_, index) => (
-            <SwiperSlide className='w-full h-full'>
+            <SwiperSlide className='w-full h-full' key={index}>
                 <span className='absolute top-6 left-3 border border-gray-400 p-2 bg-white rounded-full h-[30px] w-[30px] flex justify-center items-center'>
                   {index + 1}
                 </span>

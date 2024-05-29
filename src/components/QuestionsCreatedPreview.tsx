@@ -1,8 +1,9 @@
-import React, { useContext, useMemo } from 'react'
+import React, { useContext, useMemo, useState } from 'react'
 import { GeneralContext } from '../context/GeneralContext'
 import { useNavigate } from 'react-router'
 import { QuestionsCreatedPreviewType } from '../types/GeneralComponentsTypes'
 import GeneralButton from './GeneralButton'
+import ConfirmationAlert from './ConfirmationAlert'
 
 function QuestionsCreatedPreview({
   actualQuestions,
@@ -11,6 +12,8 @@ function QuestionsCreatedPreview({
 }: QuestionsCreatedPreviewType) {
   const { forms, setForms } = useContext(GeneralContext)
   const navigate = useNavigate()
+  const [title,setTitle]=useState("")
+  const [message,setMessage]=useState("")
 
   const handleCancelSendQuestions = (
     event: React.MouseEvent<HTMLButtonElement>
@@ -26,8 +29,13 @@ function QuestionsCreatedPreview({
     event.preventDefault()
     localStorage.setItem('forms', JSON.stringify([...forms, actualQuestions]))
     setForms((prev: OutputObject[]) => [...prev, actualQuestions])
-    setActualFormCreation([])
-    navigate('/teacher')
+    setTitle("Crear")
+    setMessage("Cuestionario creado correctamente")
+    setTimeout(()=>{
+      setActualFormCreation([])
+      navigate('/teacher')
+    },2000)
+
   }
 
   const getCorrectAnswer = useMemo(() => {
@@ -99,6 +107,10 @@ function QuestionsCreatedPreview({
       <div>
         <GeneralButton onClick={handleCreateQuestions}>Enviar</GeneralButton>
       </div>
+      {title&&message&&(
+      <ConfirmationAlert title={title} message={message}/>
+      )}
+
     </div>
   )
 }
