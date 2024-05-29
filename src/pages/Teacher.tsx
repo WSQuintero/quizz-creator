@@ -33,6 +33,7 @@ function Teacher() {
           </GeneralButton>
         </article>
       )}
+
       {createQuizz && (
         <>
           <GeneralButton className='mb-5' onClick={() => setCreateQuizz(false)}>
@@ -67,6 +68,7 @@ function Teacher() {
           </article>
         </>
       )}
+
       {seeForms && (
         <>
           <GeneralButton className='mb-5' onClick={() => setSeeForms(false)}>
