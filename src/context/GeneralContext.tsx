@@ -14,7 +14,7 @@ const GeneralContext = createContext<ContextTypes>({
 function ContextProvider({ children }: { children: ReactNode }) {
   const [questions, setQuestions] = useState('')
   const [answers, setAnswers] = useState('')
-  const [forms, setForms] = useState<OutputObject[]>(
+  const [forms, setForms] = useState<OutputObject[][] | []>(
     JSON.parse(String(localStorage.getItem('forms'))) || []
   )
   const [actualFormCreation, setActualFormCreation] = useState<OutputObject[]>(

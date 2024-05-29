@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+:root{
+  color-scheme: dark;
+  color:canvas
+}
+
 article{
   @apply w-2/4 h-2/4 border border-gray-400 p-5  rounded-xl flex bg-white;
 }

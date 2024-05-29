@@ -159,7 +159,7 @@ function TeacherCreator() {
   }
 
   return (
-    <div className='w-full h-screen flex justify-center items-center flex-col'>
+    <main className='w-full h-screen flex justify-center items-center flex-col'>
       <h3>Crea tus preguntas y respuestas</h3>
       <GeneralButton onClick={()=>window.history.back()}>{"<-"}</GeneralButton>
       <form
@@ -219,7 +219,7 @@ function TeacherCreator() {
           resetcorrectOptions={resetcorrectOptions}
         />
       )}
-    </div>
+    </main>
   )
 }
 

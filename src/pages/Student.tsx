@@ -1,5 +1,5 @@
 function Student() {
-  return <div>Student</div>
+  return <main>Student</main>
 }
 
 export default Student

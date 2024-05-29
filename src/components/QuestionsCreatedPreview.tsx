@@ -12,8 +12,8 @@ function QuestionsCreatedPreview({
 }: QuestionsCreatedPreviewType) {
   const { forms, setForms } = useContext(GeneralContext)
   const navigate = useNavigate()
-  const [title,setTitle]=useState("")
-  const [message,setMessage]=useState("")
+  const [title, setTitle] = useState('')
+  const [message, setMessage] = useState('')
 
   const handleCancelSendQuestions = (
     event: React.MouseEvent<HTMLButtonElement>
@@ -28,32 +28,38 @@ function QuestionsCreatedPreview({
   ) => {
     event.preventDefault()
     localStorage.setItem('forms', JSON.stringify([...forms, actualQuestions]))
-    setForms((prev: OutputObject[]) => [...prev, actualQuestions])
-    setTitle("Crear")
-    setMessage("Cuestionario creado correctamente")
-    setTimeout(()=>{
+    setForms((prev: OutputObject[][]) => [...prev, actualQuestions])
+    setTitle('Crear')
+    setMessage('Cuestionario creado correctamente')
+    setTimeout(() => {
       setActualFormCreation([])
       navigate('/teacher')
-    },2000)
-
+    }, 2000)
   }
 
-  const getCorrectAnswer = useMemo(() => {
-    return (actualQuestions: OutputObject[], ind: number): number => {
-      if (
-        actualQuestions &&
-        actualQuestions[ind] &&
-        actualQuestions[ind].correctAnswer
-      ) {
-        const correctAnswer = actualQuestions[ind]?.correctAnswer
-        if (correctAnswer) {
-          const correctAnswerParts = correctAnswer.split('-')
-          return Number(correctAnswerParts[correctAnswerParts.length - 1])
-        }
+  const getCorrectAnswer = (
+    actualQuestions: OutputObject[],
+    ind: number
+  ): number => {
+    if (
+      actualQuestions &&
+      actualQuestions[ind] &&
+      actualQuestions[ind].correctAnswer
+    ) {
+      const correctAnswer = actualQuestions[ind]?.correctAnswer
+      if (correctAnswer) {
+        const correctAnswerParts = correctAnswer.split('-')
+        return Number(correctAnswerParts[correctAnswerParts.length - 1])
       }
-      return 0
     }
-  }, [])
+    return 0
+  }
+
+  const correctAnswers = useMemo(() => {
+    return actualQuestions.map((_, ind: number) =>
+      getCorrectAnswer(actualQuestions, ind)
+    )
+  }, [actualQuestions])
 
   return (
     <div className='bg-black/50 w-full h-screen gap-5 fixed top-0 left-0 z-50 flex justify-start items-center flex-col p-10 '>
@@ -73,32 +79,27 @@ function QuestionsCreatedPreview({
               Pregunta: <span className='font-normal'>{question.question}</span>
             </p>
             <div className='flex gap-3 border border-gray-400 pl-5'>
-              <p className='font-bold '>
-                Respuesta correcta:{' '}
-              </p>
+              <p className='font-bold '>Respuesta correcta: </p>
               {Object.entries(question.answers).map((answer, index) => (
                 <div key={index}>
-                  {getCorrectAnswer(actualQuestions, ind) - 1 === index && (
+                  {correctAnswers[ind] - 1 === index && (
                     <p className='text-green-500'>{answer[1]}</p>
                   )}
                 </div>
               ))}
             </div>
             <div className='flex gap-3 border border-gray-400 pl-5'>
-              <p className='font-bold '>
-                Respuestas incorrectas:{' '}
-              </p>
+              <p className='font-bold '>Respuestas incorrectas: </p>
               <ol className='flex flex-col list-disc ml-5'>
-
-              {Object.entries(question.answers).map((answer, index) => (
-                <React.Fragment key={index}>
-                {getCorrectAnswer(actualQuestions, ind) - 1 !== index && (
-                <li  >
-                    <p className="text-red-500">{answer[1]}</p>
-                    </li>
-                  )}
-                </React.Fragment>
-              ))}
+                {Object.entries(question.answers).map((answer, index) => (
+                  <React.Fragment key={index}>
+                    {correctAnswers[ind] - 1 !== index && (
+                      <li>
+                        <p className='text-red-500'>{answer[1]}</p>
+                      </li>
+                    )}
+                  </React.Fragment>
+                ))}
               </ol>
             </div>
           </article>
@@ -107,10 +108,9 @@ function QuestionsCreatedPreview({
       <div>
         <GeneralButton onClick={handleCreateQuestions}>Enviar</GeneralButton>
       </div>
-      {title&&message&&(
-      <ConfirmationAlert title={title} message={message}/>
+      {title && message && (
+        <ConfirmationAlert title={title} message={message} />
       )}
-
     </div>
   )
 }
