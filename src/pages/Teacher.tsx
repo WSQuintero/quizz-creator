@@ -10,6 +10,7 @@ function Teacher() {
   const [createQuizz, setCreateQuizz] = useState(false)
   const [seeForms, setSeeForms] = useState(false)
   const [actualForm, setActualForm] = useState<OutputObject[] | undefined>()
+  const [openStudentResults, setOpenStudentResults] = useState(false)
 
   const handleSendQuestions = () => {
     if (questions && answers) {
@@ -30,6 +31,11 @@ function Teacher() {
             className='h-[150px]'
             onClick={() => setCreateQuizz(true)}>
             Crear cuestionario
+          </GeneralButton>
+          <GeneralButton
+            className='h-[150px]'
+            onClick={() => setOpenStudentResults(true)}>
+            Ver resultados estudiantes
           </GeneralButton>
         </article>
       )}

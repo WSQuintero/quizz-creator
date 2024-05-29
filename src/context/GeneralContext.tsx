@@ -8,12 +8,17 @@ const GeneralContext = createContext<ContextTypes>({
   actualFormCreation: [],
   setActualFormCreation: () => null,
   forms: [],
-  setForms: () => null
+  setForms: () => null,
+  studentAnswers: [],
+  setStudentAnswers: () => null
 })
 
 function ContextProvider({ children }: { children: ReactNode }) {
   const [questions, setQuestions] = useState('')
   const [answers, setAnswers] = useState('')
+  const [studentAnswers, setStudentAnswers] = useState(
+    JSON.parse(String(localStorage.getItem('answers'))) || []
+  )
   const [forms, setForms] = useState<OutputObject[][] | []>(
     JSON.parse(String(localStorage.getItem('forms'))) || []
   )
@@ -31,7 +36,9 @@ function ContextProvider({ children }: { children: ReactNode }) {
         actualFormCreation,
         setActualFormCreation,
         forms,
-        setForms
+        setForms,
+        studentAnswers,
+        setStudentAnswers
       }}>
       {children}
     </GeneralContext.Provider>

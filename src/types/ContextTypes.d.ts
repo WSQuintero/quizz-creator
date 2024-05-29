@@ -6,5 +6,7 @@ interface ContextTypes {
   actualFormCreation:OutputObject[],
   setActualFormCreation:Dispatch<SetStateAction<OutputObject[]>>
   forms:OutputObject[][],
-  setForms:Dispatch<SetStateAction<OutputObject[]>>
+  setForms:Dispatch<SetStateAction<OutputObject[]>>,
+  studentAnswers:{[key:string]:string[]}[],
+  setStudentAnswers:Dispatch<SetStateAction<{[key:string]:string[]}[]>>
 }
