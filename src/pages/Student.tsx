@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import GeneralButton from '../components/GeneralButton'
 import { GeneralContext } from '../context/GeneralContext'
 import { useForm } from 'react-hook-form'
@@ -15,9 +15,12 @@ function Student() {
   const { register, handleSubmit } = useForm()
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false)
   const [numberOfForm, setNumberOfForm] = useState<number | undefined>()
+  const [openName, setOpenName] = useState(false)
+  const [name, setName] = useState('')
   const [actualAnswers, setActualAnswers] = useState<{
     [key: string]: string[]
   }>({})
+  const [openResults, setOpenResults] = useState(false)
   const handleCreateForm = (data: { [key: string]: string[] }) => {
     setActualAnswers(data)
     setOpenConfirmationModal(true)
@@ -47,15 +50,34 @@ function Student() {
                 onClick={() => {
                   setActualForm(undefined)
                   setActualForm(form)
-                  setOpenTest(true)
                   setNumberOfForm(index + 1)
+                  setOpenName(true)
                 }}>{`formulario ${String(index + 1)}`}</GeneralButton>
             </li>
           ))}
         </ul>
       </article>
 
-      {actualForm && openTest && (
+      {openName && (
+        <div className='fixed w-full h-full top-0 bg-black/50 flex justify-center items-center'>
+          <article className='flex-col justify-center'>
+            <input
+              type='text'
+              placeholder='Escribe tu nombre'
+              onChange={(event) => setName(event?.target.value)}
+              className='h-[50px]'
+            />
+            <GeneralButton
+              onClick={() => {
+                setOpenName(false)
+                setOpenTest(true)
+              }}>
+              Ir a formulario
+            </GeneralButton>
+          </article>
+        </div>
+      )}
+      {actualForm && openTest && name && (
         <div className='w-full h-full bg-black/50 top-0 left-0 z-50 flex justify-center fixed flex-col items-center'>
           <GeneralButton
             onClick={() => {
@@ -132,14 +154,74 @@ function Student() {
                     'answers',
                     JSON.stringify([
                       ...studentAnswers,
-                      { ...actualAnswers, student: 'pepe', numberOfForm }
+                      { ...actualAnswers, student: name, numberOfForm }
                     ])
                   )
+                  setOpenConfirmationModal(false)
+                  setOpenResults(true)
                 }}>
                 Enviar
               </GeneralButton>
             </div>
           </article>
+        </div>
+      )}
+      {openResults && actualAnswers && name && (
+        <div className='z-50 fixed top-0 left-0 bg-black w-full h-full flex justify-center items-center flex-col gap-5 p-10'>
+          <GeneralButton
+            onClick={() => {
+              setOpenResults(false)
+              setActualAnswers({})
+              setOpenTest(false)
+              setActualForm([])
+            }}>
+            {'<-'}
+          </GeneralButton>
+          <p className='font-bold text-white'>
+            {name} tuviste{' '}
+            <span>
+              {
+                forms[Number(numberOfForm) - 1].filter(
+                  (question, index) =>
+                    Object.values(question.answers)[
+                      Number(question.correctAnswer?.split('-')[2]) - 1
+                    ] === actualAnswers.answers[index]
+                ).length
+              }
+            </span>{' '}
+            respuesta/s correcta/s:{' '}
+          </p>
+
+          {forms[Number(numberOfForm) - 1].map((question, ind) => (
+            <article
+              key={ind}
+              className='flex-col h-[250px] p-5 justify-center '>
+              <span className='p-3 w-[30px] h-[30px] bg-white flex justify-center items-center rounded-full border border-gray-400'>
+                {question.numberQuestion}
+              </span>
+              <p className='font-bold border border-gray-400 pl-5 mt-3'>
+                Pregunta:{' '}
+                <span className='font-normal'>{question.question}</span>
+              </p>
+              <div className='flex  border border-gray-400  flex-col '>
+                <p className='font-bold border border-gray-400 pl-5'>
+                  Respuesta correcta:{' '}
+                  <span>
+                    {
+                      Object.values(question.answers)[
+                        Number(question?.correctAnswer?.split('-')[2]) - 1
+                      ]
+                    }
+                  </span>
+                </p>
+
+                <p className='font-bold border border-gray-400 pl-5'>
+                  Respuesta seleccionada:{' '}
+                  <span>{actualAnswers.answers[ind]}</span>{' '}
+                </p>
+              </div>
+            </article>
+          ))}
         </div>
       )}
     </div>
