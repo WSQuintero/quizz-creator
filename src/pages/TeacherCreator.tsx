@@ -148,7 +148,8 @@ function TeacherCreator() {
   const disableAllRadioInputs = () => {
     const radioInputs = document.querySelectorAll('input[type="radio"]')
     radioInputs.forEach((input) => {
-      (input as HTMLInputElement).checked = false
+      const correctInput = input as HTMLInputElement
+      correctInput.checked = false
     })
   }
 
@@ -161,20 +162,21 @@ function TeacherCreator() {
   return (
     <main className='w-full h-screen flex justify-center items-center flex-col'>
       <h3>Crea tus preguntas y respuestas</h3>
-      <GeneralButton onClick={()=>window.history.back()}>{"<-"}</GeneralButton>
+      <GeneralButton onClick={() => window.history.back()}>
+        {'<-'}
+      </GeneralButton>
       <form
         onSubmit={handleSubmit(handleCreateForm)}
         className='flex flex-col w-3/4 gap-3 h-[90vh] justify-center items-center'>
-        <Swiper
-          pagination={pagination}
-          modules={[Pagination]}
-          >
+        <Swiper pagination={pagination} modules={[Pagination]}>
           {questionsToRender.map((_, index) => (
             <SwiperSlide className='w-full h-full' key={index}>
-                <span className='absolute top-6 left-3 border border-gray-400 p-2 bg-white rounded-full h-[30px] w-[30px] flex justify-center items-center'>
-                  {index + 1}
-                </span>
-              <article key={index} className='flex-col w-[90%] relative h-[80%] overflow-auto'>
+              <span className='absolute top-6 left-3 border border-gray-400 p-2 bg-white rounded-full h-[30px] w-[30px] flex justify-center items-center'>
+                {index + 1}
+              </span>
+              <article
+                key={index}
+                className='flex-col w-[90%] relative h-[80%] overflow-auto'>
                 <input
                   type='text'
                   placeholder='Crea tu pregunta'
@@ -204,11 +206,12 @@ function TeacherCreator() {
                   </div>
                 ))}
               </article>
-
             </SwiperSlide>
           ))}
         </Swiper>
-      {error && <span className='text-red-600 text-xl'>{error}</span>}
+
+        {error && <span className='text-red-600 text-xl'>{error}</span>}
+
         <GeneralButton type='submit'>Crear</GeneralButton>
       </form>
 

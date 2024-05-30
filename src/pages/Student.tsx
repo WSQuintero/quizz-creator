@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import { useContext, useState } from 'react'
 import GeneralButton from '../components/GeneralButton'
 import { GeneralContext } from '../context/GeneralContext'
 import { useForm } from 'react-hook-form'
@@ -17,15 +17,10 @@ function Student() {
   const [numberOfForm, setNumberOfForm] = useState<number | undefined>()
   const [openName, setOpenName] = useState(false)
   const [name, setName] = useState('')
+  const [openResults, setOpenResults] = useState(false)
   const [actualAnswers, setActualAnswers] = useState<{
     [key: string]: string[]
   }>({})
-  const [openResults, setOpenResults] = useState(false)
-  const handleCreateForm = (data: { [key: string]: string[] }) => {
-    setActualAnswers(data)
-    setOpenConfirmationModal(true)
-    console.log(data)
-  }
 
   const pagination = {
     clickable: true,
@@ -33,6 +28,12 @@ function Student() {
       return '<span class="' + className + '">' + (index + 1) + '</span>'
     }
   }
+
+  const handleCreateForm = (data: { [key: string]: string[] }) => {
+    setActualAnswers(data)
+    setOpenConfirmationModal(true)
+  }
+
   return (
     <div className='w-full h-screen flex justify-center flex-col items-center'>
       <GeneralButton
@@ -77,6 +78,7 @@ function Student() {
           </article>
         </div>
       )}
+
       {actualForm && openTest && name && (
         <div className='w-full h-full bg-black/50 top-0 left-0 z-50 flex justify-center fixed flex-col items-center'>
           <GeneralButton
@@ -136,6 +138,7 @@ function Student() {
           </div>
         </div>
       )}
+
       {openConfirmationModal && (
         <div className='bg-black/80 w-full h-full z-50 fixed top-0 left-0 flex justify-center items-center'>
           <article className='flex justify-center items-center flex-col h-auto p-10'>
@@ -166,6 +169,7 @@ function Student() {
           </article>
         </div>
       )}
+
       {openResults && actualAnswers && name && (
         <div className='z-50 fixed top-0 left-0 bg-black w-full h-full flex justify-center items-center flex-col gap-5 p-10'>
           <GeneralButton
