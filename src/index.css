@@ -12,11 +12,11 @@ article{
 }
 
 input[type="number"] {
-@apply border border-gray-400  w-full p-3;
+@apply border border-gray-400  w-full p-3 text-white;
 }
 
 input[type="text"] {
-  @apply border border-gray-400  w-full p-3;
+  @apply border border-gray-400  w-full p-3 text-white;
   }
 
 h3{

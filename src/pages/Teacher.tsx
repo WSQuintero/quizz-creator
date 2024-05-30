@@ -29,23 +29,28 @@ function Teacher() {
   return (
     <main className='w-full h-screen flex justify-center items-center flex-col '>
       {!createQuizz && !seeForms && (
-        <article className='justify-around items-center'>
-          <GeneralButton
-            className='h-[150px]'
-            onClick={() => setSeeForms(true)}>
-            Ver cuestionarios
+        <>
+          <GeneralButton className='mb-5' onClick={() => window.history.back()}>
+            {'<-'}
           </GeneralButton>
-          <GeneralButton
-            className='h-[150px]'
-            onClick={() => setCreateQuizz(true)}>
-            Crear cuestionario
-          </GeneralButton>
-          <GeneralButton
-            className='h-[150px]'
-            onClick={() => setOpenStudentResults(true)}>
-            Ver resultados estudiantes
-          </GeneralButton>
-        </article>
+          <article className='justify-around items-center'>
+            <GeneralButton
+              className='h-[150px]'
+              onClick={() => setSeeForms(true)}>
+              Ver cuestionarios
+            </GeneralButton>
+            <GeneralButton
+              className='h-[150px]'
+              onClick={() => setCreateQuizz(true)}>
+              Crear cuestionario
+            </GeneralButton>
+            <GeneralButton
+              className='h-[150px]'
+              onClick={() => setOpenStudentResults(true)}>
+              Ver resultados estudiantes
+            </GeneralButton>
+          </article>
+        </>
       )}
 
       {createQuizz && (
@@ -153,22 +158,31 @@ function Teacher() {
       )}
 
       {openStudentResults && (
-        <div className='w-full fixed h-full top-0 left-0 z-50 bg-black/50 flex justify-center items-center'>
-          <article>
+        <div className='w-full fixed h-full top-0 left-0 z-50 bg-black flex justify-center items-center flex-col'>
+          <GeneralButton
+            onClick={() => {
+              setOpenStudentResults(false)
+            }}>
+            {'<-'}
+          </GeneralButton>
+          <article className='gap-2 flex-wrap '>
             {studentAnswers.map((student, index) => (
               <GeneralButton
-                className='h-[50px] w-full'
+                className='h-[50px] w-[48%]'
                 key={index}
                 onClick={() => {
                   setOpenStudentForm(true)
                   setActualStudentForm(student)
                 }}>
-                {student.student}
+                {`${student.student} - formulario: ${String(
+                  student.numberOfForm
+                )}`}
               </GeneralButton>
             ))}
           </article>
         </div>
       )}
+
       {openStudentForm && actualStudentForm && (
         <div className='z-50 fixed top-0 left-0 bg-black w-full h-full flex justify-center items-center flex-col gap-5 p-10 overflow-auto'>
           <GeneralButton
