@@ -4,14 +4,22 @@ import { GeneralContext } from '../context/GeneralContext'
 import GeneralButton from '../components/GeneralButton'
 
 function Teacher() {
-  const { questions, answers, setQuestions, setAnswers, forms } =
-    useContext(GeneralContext)
+  const {
+    questions,
+    answers,
+    setQuestions,
+    setAnswers,
+    forms,
+    studentAnswers
+  } = useContext(GeneralContext)
   const navigate = useNavigate()
   const [createQuizz, setCreateQuizz] = useState(false)
   const [seeForms, setSeeForms] = useState(false)
   const [actualForm, setActualForm] = useState<OutputObject[] | undefined>()
   const [openStudentResults, setOpenStudentResults] = useState(false)
-
+  const [openStudentForm, setOpenStudentForm] = useState(false)
+  const [actualStudentForm, setActualStudentForm] =
+    useState<StudentAnswersType>()
   const handleSendQuestions = () => {
     if (questions && answers) {
       navigate('/teacher/creator')
@@ -141,6 +149,86 @@ function Teacher() {
               </ul>
             </article>
           </section>
+        </div>
+      )}
+
+      {openStudentResults && (
+        <div className='w-full fixed h-full top-0 left-0 z-50 bg-black/50 flex justify-center items-center'>
+          <article>
+            {studentAnswers.map((student, index) => (
+              <GeneralButton
+                className='h-[50px] w-full'
+                key={index}
+                onClick={() => {
+                  setOpenStudentForm(true)
+                  setActualStudentForm(student)
+                }}>
+                {student.student}
+              </GeneralButton>
+            ))}
+          </article>
+        </div>
+      )}
+      {openStudentForm && actualStudentForm && (
+        <div className='z-50 fixed top-0 left-0 bg-black w-full h-full flex justify-center items-center flex-col gap-5 p-10 overflow-auto'>
+          <GeneralButton
+            onClick={() => {
+              setActualStudentForm(undefined)
+              setOpenStudentForm(false)
+            }}>
+            {'<-'}
+          </GeneralButton>
+          <h3 className='text-white'>
+            Formulario número: {actualStudentForm.numberOfForm}
+          </h3>
+          <p className='font-bold text-white'>
+            {actualStudentForm.student} tuvo{' '}
+            <span>
+              {
+                forms[Number(actualStudentForm.numberOfForm) - 1].filter(
+                  (question, index) =>
+                    Object.values(question.answers)[
+                      Number(question.correctAnswer?.split('-')[2]) - 1
+                    ] === actualStudentForm.answers[index]
+                ).length
+              }
+            </span>{' '}
+            respuestas correctas de{' '}
+            {forms[Number(actualStudentForm.numberOfForm) - 1].length} posibles
+          </p>
+
+          {forms[Number(actualStudentForm.numberOfForm) - 1].map(
+            (question, ind) => (
+              <article
+                key={ind}
+                className='flex-col h-[250px] p-5 justify-center '>
+                <span className='p-3 w-[30px] h-[30px] bg-white flex justify-center items-center rounded-full border border-gray-400'>
+                  {question.numberQuestion}
+                </span>
+                <p className='font-bold border border-gray-400 pl-5 mt-3'>
+                  Pregunta:{' '}
+                  <span className='font-normal'>{question.question}</span>
+                </p>
+                <div className='flex  border border-gray-400  flex-col '>
+                  <p className='font-bold border border-gray-400 pl-5'>
+                    Respuesta correcta:{' '}
+                    <span>
+                      {
+                        Object.values(question.answers)[
+                          Number(question?.correctAnswer?.split('-')[2]) - 1
+                        ]
+                      }
+                    </span>
+                  </p>
+
+                  <p className='font-bold border border-gray-400 pl-5'>
+                    Respuesta seleccionada:{' '}
+                    <span>{actualStudentForm.answers[ind]}</span>{' '}
+                  </p>
+                </div>
+              </article>
+            )
+          )}
         </div>
       )}
     </main>

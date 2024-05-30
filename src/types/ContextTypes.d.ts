@@ -1,3 +1,4 @@
+type StudentAnswersType={answers:string[],numberOfForm:number,student:string}
 interface ContextTypes {
   questions: string
   setQuestions: Dispatch<SetStateAction<string>>
@@ -7,6 +8,6 @@ interface ContextTypes {
   setActualFormCreation:Dispatch<SetStateAction<OutputObject[]>>
   forms:OutputObject[][],
   setForms:Dispatch<SetStateAction<OutputObject[]>>,
-  studentAnswers:{[key:string]:string[]}[],
-  setStudentAnswers:Dispatch<SetStateAction<{[key:string]:string[]}[]>>
+  studentAnswers:StudentAnswersType[],
+  setStudentAnswers:Dispatch<SetStateAction<StudentAnswersType[]>>
 }
